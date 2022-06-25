@@ -33,6 +33,10 @@ Route::get('/demo', function () {
 
  Route::resource('companies', CompanyController::class);
  Route::get('/companies', [CompanyController::class,'index'])->name('companies');
+ Route::get('/company_list', [CompanyController::class,'show'])->name('company_list');
+ Route::get('/company_edit', [CompanyController::class,'edit'])->name('company_edit');
+ Route::get('/company_delete/{id}', [CompanyController::class,'destroy'])->name('company_delete');
+
  Route::get('/companies/create', [CompanyController::class,'create'])->name('create');
 
 

@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use DataTables;
-
+use Carbon\Carbon;
 class CompanyController extends Controller
 {
+
+    public function __construct(){
+            
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -47,18 +52,21 @@ class CompanyController extends Controller
             $image_name = $image->getClientOriginalName();
             $image->move(public_path('/images'),$image_name);
         
-            $image_path = "/images/" . $image_name;
+            $image_path =  $image_name;
         }
 
         else {
-            $image_path = "nill";
+            $image_path = "";
         }
-  
+        $current_date_time = Carbon::now('Asia/Karachi')->toDateTimeString();
+
         Company::insert ([
             'name' => $request->name,
             'email' => $request->email,
             'website'=>  $request->website,
             'logo'=> $image_path ,
+            'created_at'=> $current_date_time,
+            'updated_at'=> $current_date_time,
              'status' => 1
              ]);
  
@@ -73,9 +81,26 @@ class CompanyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        //
+        $companies = Company::orderBy('updated_at', 'DESC')->get();
+        $result = array();
+
+        $counter = 0;
+        foreach($companies as $row){
+            $rows[$counter]["sno"] = $counter + 1;
+            $rows[$counter]["name"] =$row['name'];
+            $rows[$counter]["email"] = $row['email'];
+            $rows[$counter]["website"] = $row['website'];
+            $rows[$counter]["website"] = $row['website'];
+            $rows[$counter]["id"] = $row['id'];
+            $counter+=1;
+        }
+        // $result["recordsFiltered"] = count($rows);
+        $result["data"] = $rows; 
+        return json_encode($result);
+       
+        
     }
 
     /**
@@ -110,19 +135,25 @@ class CompanyController extends Controller
             $image_name = $image->getClientOriginalName();
             $image->move(public_path('/images'),$image_name);
         
-            $image_path = "/images/" . $image_name;
+            $image_path = $image_name;
         }
 
         else {
-            $image_path = "nill";
+            //"public/images/"
+
+
+            $image_path = Company::where('id', $request->id )->pluck('logo')->first();
 
         }
+        $current_date_time = Carbon::now('Asia/Karachi')->toDateTimeString();
+
 
         $product = Company::where('id',$request->id)->update([
             'name' => $request->name,
             'email' => $request->email,
             'website'=>  $request->website,
-            'logo'=> $image_path ,
+            'logo'=> $image_path,
+            'updated_at'=>  $current_date_time,
              'status' => 1
              ]);
   
@@ -141,7 +172,6 @@ class CompanyController extends Controller
     public function destroy($id)
     {
         Company::find($id)->delete();  
-        return redirect()->route('companies')
-                        ->with('success','Company deleted successfully');
+        return redirect()->route('companies');
     }
 }

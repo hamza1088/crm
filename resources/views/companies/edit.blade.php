@@ -50,6 +50,7 @@
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="form-group">
                     <strong>Logo:</strong>
+                    <span>{{ $company->logo }}</span>
                     <input type="file" name="image_name" value="{{ $company->image_name }}" class="form-control" placeholder="">
                 </div>
             </div>
