@@ -9,18 +9,21 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Mini Facebook</title>
+    <title>Mini CRM</title>
 
     <!-- Custom fonts for this template-->
-    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="public/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
+
     <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="assets/dist/css/bootstrap.css" rel="stylesheet" />
     <link href="assets/dist/css/bbootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.12.1/af-2.4.0/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/date-1.1.2/fc-4.1.0/fh-3.2.4/kt-2.7.0/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.7/sb-1.3.4/sp-2.0.2/sl-1.4.0/sr-1.1.1/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.6.0/dt-1.12.1/af-2.4.0/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/date-1.1.2/fc-4.1.0/fh-3.2.4/kt-2.7.0/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.7/sb-1.3.4/sp-2.0.2/sl-1.4.0/sr-1.1.1/datatables.min.js"></script></html>
 
 
 
@@ -47,7 +50,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.php/home">
+                <a class="nav-link" href="{{ route('dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -73,6 +76,11 @@
                 <a class="nav-link" href="{{ route('companies') }}">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Companies</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('employees') }}">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Employees</span></a>
             </li>
 
             <!-- Nav Item - Tables -->

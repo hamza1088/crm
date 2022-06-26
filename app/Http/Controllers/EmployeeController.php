@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Company;
+use App\Models\Employee;
 use DataTables;
 use Carbon\Carbon;
-class CompanyController extends Controller
+class EmployeeController extends Controller
 {
 
     public function __construct(){
@@ -20,8 +21,8 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $companies = Company::latest()->paginate(10);
-        return view('companies.index',compact('companies'))
+        $employees = Employee::latest()->paginate(5);
+        return view('employees.index',compact('employees'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
@@ -32,7 +33,9 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('companies.create');
+        $companies = Company::all();
+        //dd($companies[0]->name);
+        return view('employees.create', compact('companies'));
 
     }
 
@@ -45,33 +48,24 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
         ]);
-        if($request->hasFile('image_name')){
-            $image = $request->file('image_name');
-            $image_name = $image->getClientOriginalName();
-            $image->move(public_path('/images'),$image_name);
-        
-            $image_path =  $image_name;
-        }
-
-        else {
-            $image_path = "";
-        }
         $current_date_time = Carbon::now('Asia/Karachi')->toDateTimeString();
 
-        Company::insert ([
-            'name' => $request->name,
-            'email' => $request->email,
-            'website'=>  $request->website,
-            'logo'=> $image_path ,
+        Employee::insert ([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email'=>  $request->email,
+            'phone'=>  $request->phone,
+            'company_id'=> $request->company,
             'created_at'=> $current_date_time,
             'updated_at'=> $current_date_time,
              'status' => 1
              ]);
  
-        return redirect()->route('companies')
-                        ->with('success','Company created successfully.');
+        return redirect()->route('employees')
+                        ->with('success','Emloyee created successfully.');
     }
 
 
@@ -83,16 +77,23 @@ class CompanyController extends Controller
      */
     public function show()
     {
-        $companies = Company::orderBy('updated_at', 'DESC')->get();
+        \DB::connection()->enableQueryLog();
+        $employees = Employee::join('companies', 'employees.company_id', '=', 'companies.id')
+               ->get(['employees.*', 'companies.name']);
+        $queries = \DB::getQueryLog();
+        //dd($employees);
+        
+    
         $result = array();
 
         $counter = 0;
-        foreach($companies as $row){
+        foreach($employees as $row){
             $rows[$counter]["sno"] = $counter + 1;
-            $rows[$counter]["name"] =$row['name'];
+            $rows[$counter]["first_name"] =$row['first_name'];
+            $rows[$counter]["last_name"] =$row['last_name'];
             $rows[$counter]["email"] = $row['email'];
-            $rows[$counter]["website"] = $row['website'];
-            $rows[$counter]["website"] = $row['website'];
+            $rows[$counter]["phone"] = $row['phone'];
+            $rows[$counter]["company"] = $row['name'];
             $rows[$counter]["id"] = $row['id'];
             $counter+=1;
         }
@@ -111,9 +112,9 @@ class CompanyController extends Controller
      */
     public function edit($id)
     {
-        $company = Company::where('id', $id)->first();
-        return view('companies.edit',compact('company'));
-
+        $companies = Company::all();
+        $employees = Employee::where('id', $id)->first();
+        return view('employees.edit',compact(['companies','employees']));
     }
 
     /**
@@ -125,42 +126,29 @@ class CompanyController extends Controller
      */
     public function update(Request $request, Company $company)
     {
-        
         // dd($request->id);
         $request->validate([
-            'name' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
         ]);
-        if($request->hasFile('image_name')){
-            $image = $request->file('image_name');
-            $image_name = $image->getClientOriginalName();
-            $image->move(public_path('/images'),$image_name);
-        
-            $image_path = $image_name;
-        }
-
-        else {
-            //"public/images/"
-
-
-            $image_path = Company::where('id', $request->id )->pluck('logo')->first();
-
-        }
         $current_date_time = Carbon::now('Asia/Karachi')->toDateTimeString();
 
 
-        $product = Company::where('id',$request->id)->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'website'=>  $request->website,
-            'logo'=> $image_path,
-            'updated_at'=>  $current_date_time,
+        $emp = Employee::where('id',$request->id)->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email'=>  $request->email,
+            'phone'=>  $request->phone,
+            'company_id'=> $request->company,
+            'created_at'=> $current_date_time,
+            'updated_at'=> $current_date_time,
              'status' => 1
              ]);
   
         //$company->update($request->all());
   
-        return redirect()->route('companies')
-                        ->with('success','Company updated successfully');
+        return redirect()->route('employees')
+                        ->with('success','Employee updated successfully');
     }
 
     /**
@@ -171,7 +159,7 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        Company::find($id)->delete();  
-        return redirect()->route('companies');
+        Employee::find($id)->delete();  
+        return redirect()->route('employees');
     }
 }
